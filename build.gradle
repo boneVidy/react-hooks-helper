@@ -23,7 +23,8 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version '2019.3.5'
+    type "IU"
+    version '2020.2.3'
 //    version '203-SNAPSHOT'
     updateSinceUntilBuild false
     sandboxDirectory = project.rootDir.canonicalPath + "/.sandbox"

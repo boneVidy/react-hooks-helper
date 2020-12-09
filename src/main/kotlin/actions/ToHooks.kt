@@ -9,10 +9,9 @@ import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
-import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.util.elementType
+import icons.gen.genUseMemoByVarStatement
 
-
-//import com.intellij.lang.typescript
 
 class ToHooks: AnAction(){
     override fun actionPerformed(event: AnActionEvent) {
@@ -20,50 +19,35 @@ class ToHooks: AnAction(){
         val document =editor?.document
         val project = event.getData(CommonDataKeys.PROJECT)
         val psiFile: PsiFile? = event.getData(LangDataKeys.PSI_FILE)
-//        JSX
-//        psiFile?.let {
-//            psiFile.ac
-//
-//
-//        }
-        val code = "test"
-//        val statement:Js
-        editor?.let {
+        if (editor != null && psiFile != null) {
             val selectModel = editor.selectionModel
             val caretModel = editor.caretModel
-            val offsetStart = if (selectModel.hasSelection()) {
-                selectModel.selectionStart
-            } else {
-                0
+            val element = psiFile.findElementAt(caretModel.offset)
+            element?.let {
+                println(element.parent)
+                val parent = element.parent
+                val elementType = element.elementType
+                var code = ""
+                parent?.let {
+                    when {
+                        elementType.toString() === "JS:VAR_STATEMENT" -> {
+                            code = genUseMemoByVarStatement(parent)
+                        }
+
+                    }
+                    convertCodeToHooks(project, document, code, caretModel.offset, caretModel.offset + parent.textLength)
+                    ProjectView.getInstance(project).refresh()
+                    event.getData(LangDataKeys.VIRTUAL_FILE)?.refresh(false, true)
+                }
+
             }
-            val offsetEnd = if (selectModel.hasSelection()) {
-                selectModel.selectionEnd
-            } else {
-                caretModel.offset
-            }
-            convertCodeToHooks(project, document, code, offsetStart, offsetEnd)
-            ProjectView.getInstance(project).refresh()
-            event.getData(LangDataKeys.VIRTUAL_FILE)?.refresh(false, true)
+
+
         }
 
     }
-//    private fun find JSVarStateMent ():JS {
+//    private fun genCodeFromPsiElement (varStatement: JSVarStatement) {
 //
-//    }
-//    private fun findInjectParameterList(file: PsiFile): JSParameterList? {
-//        // Recursively find all the call expressions in the file.
-//        val callExpressions: Collection<JSCallExpression> = PsiTreeUtil.findChildrenOfType(
-//            file,
-//            JSCallExpression::class.java
-//        )
-//        for (jsCallExpression in callExpressions) {
-//            // Find the inject() element.
-//            if (jsCallExpression.getText().startsWith("inject")) {
-//                // Get the parameter list. Should be a child of the call expression.
-//                return PsiTreeUtil.findChildOfType(jsCallExpression, JSParameterList::class.java)
-//            }
-//        }
-//        return null
 //    }
     private fun convertCodeToHooks(
         project: Project?,
