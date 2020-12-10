@@ -1,5 +1,5 @@
 package actions
-
+import com.intellij.lang.javascript.psi.impl.JSVarStatementImpl
 import com.intellij.ide.projectView.ProjectView
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -26,12 +26,12 @@ class ToHooks: AnAction(){
             element?.let {
                 println(element.parent)
                 val parent = element.parent
-                val elementType = element.elementType
+                val parentType = parent.elementType
                 var code = ""
                 parent?.let {
                     when {
-                        elementType.toString() === "JS:VAR_STATEMENT" -> {
-                            code = genUseMemoByVarStatement(parent)
+                        parentType.toString() == "JS:VAR_STATEMENT" -> {
+                            code = genUseMemoByVarStatement(parent as JSVarStatementImpl)
                         }
 
                     }
