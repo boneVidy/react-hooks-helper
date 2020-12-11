@@ -5,11 +5,9 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.LangDataKeys
 import com.intellij.psi.PsiFile
-import com.intellij.psi.tree.IElementType
-import com.intellij.psi.util.elementType
-import icons.consts.PsiElementTypeConst
 import icons.gen.genUseStateCode
 import icons.io.reWriteCode
+import icons.utils.getOffsetRange
 
 
 class ToUseState: AnAction(){
@@ -23,34 +21,17 @@ class ToUseState: AnAction(){
             val element = psiFile.findElementAt(caretModel.offset)
             element?.let {
                 val parent = element.parent
-                val range = parent.textRange
-                val psiType: IElementType? = parent.elementType
-                var startOffset:Int = 0
-                var endOffset:Int = 0
-                parent?.let {
-                    when {
-                        psiType.toString() == PsiElementTypeConst.JS_VAR_STATEMENT || psiType.toString() == PsiElementTypeConst.TYPESCRIPT_FUNCTION -> {
-                            startOffset = range.startOffset
-                            endOffset = range.endOffset
-                        }
-                        else -> {
-                            startOffset = parent.context?.textRange?.startOffset ?: 0
-                            endOffset = parent.context?.textRange?.endOffset ?: 0
-                        }
-                    }
-                }
+                val pair = getOffsetRange(parent)
+                val startOffset: Int = pair.first
+                val endOffset: Int = pair.second
                 val code = genUseStateCode(parent)
                 reWriteCode(project, document, code, startOffset, endOffset)
                 ProjectView.getInstance(project).refresh()
                 event.getData(LangDataKeys.VIRTUAL_FILE)?.refresh(false, true)
             }
-
-
         }
-
     }
-
-
-
 }
+
+
 

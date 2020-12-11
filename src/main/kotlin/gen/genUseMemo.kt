@@ -10,21 +10,22 @@ import icons.consts.PsiElementTypeConst
 import icons.consts.PsiElementTypeConst.Companion.JS_REFERENCE_EXPRESSION
 import icons.consts.PsiElementTypeConst.Companion.JS_SINGLE_TYPE
 
-fun genUseMemoCode(
-    psiEle: PsiElement?
+fun genUseHooksCode(
+    psiEle: PsiElement?,
+    hooksName: String = "useMemo"
 ): String {
     var code = ""
     val psiType: IElementType? = psiEle.elementType
     psiEle?.let {
         when {
             psiType.toString() == PsiElementTypeConst.JS_VAR_STATEMENT -> {
-                code = genUseMemoByVarStatement(psiEle as JSVarStatement)
+                code = genHooksByVarStatement(psiEle as JSVarStatement, hooksName)
             }
             psiType.toString() == PsiElementTypeConst.TYPESCRIPT_VARIABLE -> {
-                code = genUseMemoByVarStatement(psiEle.context as JSVarStatement)
+                code = genHooksByVarStatement(psiEle.context as JSVarStatement, hooksName)
             }
             psiType.toString() == PsiElementTypeConst.TYPESCRIPT_FUNCTION -> {
-                code = genUseMemoByFunction(psiEle as TypeScriptFunctionImpl)
+                code = genHooksByFunction(psiEle as TypeScriptFunctionImpl, hooksName)
             }
         }
 
@@ -32,7 +33,7 @@ fun genUseMemoCode(
     return code
 }
 
-fun genUseMemoByVarStatement(varStatement: JSVarStatement): String {
+fun genHooksByVarStatement(varStatement: JSVarStatement, hooksName: String = "useMemo"): String {
     val psiReferenceMap = mutableMapOf<String, MutableSet<PsiReference>>()
     val depMap = getDependencies(varStatement, psiReferenceMap, varStatement)
     val varKeyword = varStatement.varKeyword?.text
@@ -40,12 +41,18 @@ fun genUseMemoByVarStatement(varStatement: JSVarStatement): String {
     if (varStatement.variables.size == 1) {
         varName = varStatement.variables[0].name.toString()
     }
-    val deps = depMap.keys.reduce { acc: String, s: String -> """$acc,$s""" }
-    return """$varKeyword $varName = useMemo(() => ${varStatement.declarations[0].children[0].text}, [$deps])"""
+    var deps = ""
+    if (depMap.isNotEmpty()) {
+        deps = depMap.keys.reduce { acc: String, s: String -> """$acc,$s""" }
+    }
+    if (hooksName == "useCallback") {
+        return """$varKeyword $varName = $hooksName(${varStatement.declarations[0].children[0].text}, [$deps])"""
+    }
+    return """$varKeyword $varName = $hooksName(() => ${varStatement.declarations[0].children[0].text}, [$deps])"""
 
 }
 
-fun genUseMemoByFunction(function: TypeScriptFunctionImpl): String {
+fun genHooksByFunction(function: TypeScriptFunctionImpl, hooksName: String = "useMemo"): String {
     val psiReferenceMap = mutableMapOf<String, MutableSet<PsiReference>>()
     val depMap = getDependencies(function, psiReferenceMap, function)
     val varKeyword = "const"
@@ -54,7 +61,10 @@ fun genUseMemoByFunction(function: TypeScriptFunctionImpl): String {
     if (depMap.isNotEmpty()) {
         deps = depMap.keys.reduce { acc: String, s: String -> """$acc,$s""" }
     }
-    return """$varKeyword $varName = useMemo(() => ${function.text}, [$deps])"""
+    if (hooksName == "useCallback") {
+        return """$varKeyword $varName = $hooksName(${function.text}, [$deps])"""
+    }
+    return """$varKeyword $varName = $hooksName(() => ${function.text}, [$deps])"""
 }
 
 private fun getDependencies(
@@ -79,8 +89,3 @@ private fun getDependencies(
     return psiReferenceMap;
 }
 
-fun genUseMemoByFunction(): String {
-    val ret = ""
-
-    return ret
-}

@@ -5,9 +5,9 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import icons.gen.genCodeBuAnActionEvent
 
 
-class ToUseMemo : AnAction() {
+class ToUseCallback : AnAction() {
     override fun actionPerformed(event: AnActionEvent) {
-        genCodeBuAnActionEvent(event, "useMemo")
+        genCodeBuAnActionEvent(event, "useCallback")
     }
 }
 

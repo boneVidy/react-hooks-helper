@@ -25,6 +25,10 @@
     </extensions>
     <idea-version since-build="162"/>
     <actions>
+        <action icon="Icons.pluginIcon" id="toUseCallback" class="actions.ToUseCallback" text="Convert to UseCallback" description="Convert to UseCallback">
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="after"/>
+        </action>
         <action icon="Icons.pluginIcon" id="toUseMemo" class="actions.ToUseMemo" text="Convert to UseMemo" description="Convert to UseMemo">
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
             <add-to-group group-id="ProjectViewPopupMenu" anchor="after"/>
