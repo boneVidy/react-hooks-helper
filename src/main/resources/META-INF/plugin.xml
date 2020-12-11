@@ -2,27 +2,15 @@
     <id>com.vidy.reactHooksHelper</id>
     <name>reactHooksHelper</name>
     <vendor email="vidy3587@gmail.com" url="https://github.com/boneVidy">boneVidy</vendor>
-    <version>1.0.12</version>
+    <version>0.0.1</version>
     <description><![CDATA[
-    convert json to ts<br>s
-    <a href="https://github.com/boneVidy/json2ts">https://github.com/boneVidy/json2ts</a>
-    <div>
-    <img src="https://github.com/boneVidy/json2ts/raw/master/docs/step1.png" alt="image" style="max-width:400px;"></div>
+    react-hooks-helper<br>
+    <a href="https://github.com/boneVidy/json2ts">https://github.com/boneVidy/react-hooks-helper</a>
 
-    <div><img src="https://github.com/boneVidy/json2ts/raw/master/docs/step2.png" alt="image" style="max-width:400px;"></div>
-    <div><img src="https://github.com/boneVidy/json2ts/raw/master/docs/step3.png" alt="image" style="max-width:400px;"></div>
-    <div><img src="https://github.com/boneVidy/json2ts/raw/master/docs/step4.png" alt="image" style="max-width:400px;"></div>
-    <div><img src="https://github.com/boneVidy/json2ts/raw/master/docs/step5.png" alt="image" style="max-width:400px;"></div>
-    <div><img src="https://github.com/boneVidy/json2ts/raw/master/docs/tsfile.png" alt="image" style="max-width:400px;"></div>
     ]]></description>
     <change-notes>
         <![CDATA[<div>
-        <p>1.create ts file support new group context menu</p>
-        <img src="https://github.com/boneVidy/json2ts/raw/master/docs/tsfile.png" alt="image" style="max-width:400px;"></div>
-        <div>
-            <a href="https://github.com/boneVidy/json2ts">https://github.com/boneVidy/json2ts</a>
-        <div>
-        <p>2.fix some bugs</p>
+        <p>1.a jetbrains plugin that can help code with react hooks</p>
     </div>]]>
     </change-notes>
 
@@ -37,11 +25,6 @@
     </extensions>
     <idea-version since-build="162"/>
     <actions>
-        <!-- Add your actions here -->
-
-<!--        <action icon="Icons.pluginIcon" id="Json2ts" class="actions.Json2ts" text="Json2ts" description="Json2ts">-->
-<!--            <add-to-group group-id="EditorPopupMenu" anchor="first"/>-->e
-<!--        </action>-->
         <action icon="Icons.pluginIcon" id="toUseMemo" class="actions.ToUseMemo" text="Convert to UseMemo" description="Convert to UseMemo">
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
             <add-to-group group-id="ProjectViewPopupMenu" anchor="after"/>
