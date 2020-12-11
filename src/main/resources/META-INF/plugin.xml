@@ -27,11 +27,11 @@
     <actions>
         <action icon="Icons.pluginIcon" id="toUseCallback" class="actions.ToUseCallback" text="Convert to UseCallback" description="Convert to UseCallback">
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
-            <add-to-group group-id="ProjectViewPopupMenu" anchor="after"/>
+            <add-to-group group-id="EditorActions" anchor="after"/>
         </action>
         <action icon="Icons.pluginIcon" id="toUseMemo" class="actions.ToUseMemo" text="Convert to UseMemo" description="Convert to UseMemo">
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
-            <add-to-group group-id="ProjectViewPopupMenu" anchor="after"/>
+            <add-to-group group-id="EditorActions" anchor="after"/>
         </action>
         <action icon="Icons.pluginIcon" id="toUseState" class="actions.ToUseState" text="Convert to UseState" description="Convert to UseState">
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
