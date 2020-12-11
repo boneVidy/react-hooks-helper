@@ -40,9 +40,9 @@
         <!-- Add your actions here -->
 
 <!--        <action icon="Icons.pluginIcon" id="Json2ts" class="actions.Json2ts" text="Json2ts" description="Json2ts">-->
-<!--            <add-to-group group-id="EditorPopupMenu" anchor="first"/>-->
+<!--            <add-to-group group-id="EditorPopupMenu" anchor="first"/>-->e
 <!--        </action>-->
-        <action icon="Icons.pluginIcon" id="ToHooks" class="actions.ToHooks" text="ToHooks" description="ToHooks">
+        <action icon="Icons.pluginIcon" id="toUseMemo" class="actions.ToHooks" text="Convert to UseMemo" description="Convert to UseMemo">
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
             <add-to-group group-id="ProjectViewPopupMenu" anchor="after"/>
         </action>

@@ -1,21 +1,25 @@
 package icons.gen
 
-import com.intellij.lang.javascript.psi.impl.JSVarStatementImpl
+import com.intellij.lang.javascript.psi.JSVarStatement
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
 import com.intellij.psi.util.elementType
 
 //import com.intellij.lang.javascript.psi.JSVarStatement
 //
-public fun genUseMemoByVarStatement (varStatement: JSVarStatementImpl):String {
+public fun genUseMemoByVarStatement (varStatement: JSVarStatement):String {
 
     val ret = ""
     val varTypeText = varStatement.children[0].text;
-//    varStatement.children[1].children.
     val psiReferenceMap = mutableMapOf<String, MutableSet<PsiReference>>()
     val depMap = getDependencies(varStatement, psiReferenceMap)
-    val varKeyword = varStatement.varKeyword
-    return """$varKeyword """
+    val varKeyword = varStatement.varKeyword?.text
+    var varName = ""
+    if (varStatement.variables.size == 1) {
+        varName = varStatement.variables[0].name.toString()
+    }
+    val deps = depMap.keys.reduce { acc: String, s: String -> """$acc,$s""" }
+    return """$varKeyword $varName = useMemo(() => ${varStatement.declarations[0].children[0].text}, [$deps])"""
 
 }
 

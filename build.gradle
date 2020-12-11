@@ -28,7 +28,7 @@ intellij {
 //    version '203-SNAPSHOT'
     updateSinceUntilBuild false
     sandboxDirectory = project.rootDir.canonicalPath + "/.sandbox"
-    plugins ["JavaScriptLanguage"]
+    plugins "JavaScriptLanguage"
 //    setPlugins("JavaScriptLanguage")
 }
 //webstorm {
