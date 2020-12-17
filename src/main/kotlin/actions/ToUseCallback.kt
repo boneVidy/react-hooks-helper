@@ -9,5 +9,6 @@ class ToUseCallback : AnAction() {
     override fun actionPerformed(event: AnActionEvent) {
         genCodeBuAnActionEvent(event, "useCallback")
     }
+
 }
 
