@@ -1,11 +1,10 @@
-package icons.gen
+package gen
 
 import com.intellij.lang.javascript.psi.JSVarStatement
-import com.intellij.lang.javascript.psi.ecma6.impl.TypeScriptFunctionImpl
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.util.elementType
-import icons.consts.PsiElementTypeConst
+import consts.PsiElementTypeConst
 
 fun genUseStateCode (
     psiEle: PsiElement?
@@ -20,9 +19,6 @@ fun genUseStateCode (
             psiType.toString() == PsiElementTypeConst.TYPESCRIPT_VARIABLE -> {
                 code = genUseStateByVarStatement(psiEle.context as JSVarStatement)
             }
-//            psiType.toString() == PsiElementTypeConst.TYPESCRIPT_FUNCTION -> {
-//                code = genUseMemoByFunction(psiEle as TypeScriptFunctionImpl)
-//            }
         }
 
     }
