@@ -1,6 +1,7 @@
-package icons.gen
+package gen
 
 import com.intellij.psi.PsiElement
+import gen.genUseHooksCode
 
 fun genUseCallBackCode(
     psiEle: PsiElement?

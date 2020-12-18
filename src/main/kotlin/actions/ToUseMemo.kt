@@ -2,7 +2,7 @@ package actions
 
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import icons.gen.genCodeBuAnActionEvent
+import gen.genCodeBuAnActionEvent
 
 
 class ToUseMemo : AnAction() {

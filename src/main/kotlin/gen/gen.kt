@@ -1,12 +1,12 @@
-package icons.gen
+package gen
 
 import com.intellij.ide.projectView.ProjectView
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.LangDataKeys
 import com.intellij.psi.PsiFile
-import icons.io.reWriteCode
-import icons.utils.getOffsetRange
+import io.reWriteCode
+import utils.getOffsetRange
 
 fun genCodeBuAnActionEvent(event: AnActionEvent, hooksName: String) {
     val editor = event.getData(CommonDataKeys.EDITOR)

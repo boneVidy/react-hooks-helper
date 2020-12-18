@@ -5,9 +5,9 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.LangDataKeys
 import com.intellij.psi.PsiFile
-import icons.gen.genUseStateCode
-import icons.io.reWriteCode
-import icons.utils.getOffsetRange
+import gen.genUseStateCode
+import io.reWriteCode
+import utils.getOffsetRange
 
 
 class ToUseState: AnAction(){

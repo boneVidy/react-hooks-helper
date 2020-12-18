@@ -1,12 +1,11 @@
-package icons.utils
+package utils
 
-import com.intellij.lang.javascript.psi.JSVarStatement
-import com.intellij.lang.javascript.psi.JSVariable
+import com.intellij.lang.javascript.psi.*
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.util.elementType
-import icons.consts.PsiElementTypeConst
+import consts.PsiElementTypeConst
 
 fun getOffsetRange(element: PsiElement): Pair<Int, Int> {
     val range = element.textRange
@@ -26,47 +25,68 @@ fun getOffsetRange(element: PsiElement): Pair<Int, Int> {
     return Pair( startOffset, endOffset)
 }
 fun getDependencies(psiElement: PsiElement): MutableMap<String, MutableSet<PsiReference>> {
-    return getDependencies(psiElement, null, null, null)
+    return getDependencies(psiElement, null, null)
 }
 
 private fun getDependencies(
     psiElement: PsiElement,
     refMap: MutableMap<String, MutableSet<PsiReference>>?,
-    ctxScope: PsiElement?,
-    varMap: MutableMap<String, MutableSet<JSVariable>>?
+    ctxScope: PsiElement?
 ): MutableMap<String, MutableSet<PsiReference>> {
     val psiReferenceMap = refMap ?: mutableMapOf()
     val contextScope = ctxScope ?: psiElement
-    val innerVarMap = varMap ?: mutableMapOf()
-    if (psiElement.elementType.toString() == PsiElementTypeConst.JS_REFERENCE_EXPRESSION) {
-        if (psiReferenceMap[psiElement.text].isNullOrEmpty()) {
-            val set = mutableSetOf<PsiReference>()
-            set.add(psiElement.references[0])
-            psiReferenceMap[psiElement.text] = set
-        } else {
-            psiReferenceMap[psiElement.text]?.add(psiElement.references[0])
-        }
-    }
-    if (psiElement.elementType .toString() == PsiElementTypeConst.JS_VAR_STATEMENT) {
-        (psiElement as JSVarStatement).variables.forEach {
-            val name = it.name
-            if (name != null) {
-                if (innerVarMap[name].isNullOrEmpty()) {
-                    val set = mutableSetOf<JSVariable>()
-                    set.add(it)
-                    innerVarMap[name] = set
-                }else {
-                    innerVarMap[name]?.add(it)
-                }
+    if (psiElement is JSReferenceExpression) {
+        if (getFunctionContext(psiElement, contextScope) == null && isValueContextInFile(psiElement, contextScope)) {
+            if (psiReferenceMap[psiElement.text].isNullOrEmpty()) {
+                val set = mutableSetOf<PsiReference>()
+                set.add(psiElement.references[0])
+                psiReferenceMap[psiElement.text] = set
+            } else {
+                psiReferenceMap[psiElement.text]?.add(psiElement.references[0])
             }
-
         }
+        return psiReferenceMap
     }
     if (psiElement.children.isNotEmpty() && psiElement.elementType.toString() != PsiElementTypeConst.JS_SINGLE_TYPE) {
-        psiElement.children.forEach { getDependencies(it, psiReferenceMap, contextScope, innerVarMap) }
+        psiElement.children.forEach { getDependencies(it, psiReferenceMap, contextScope) }
     }
-    println(innerVarMap)
-//    innerVarMap.forEach { }
-//    psiReferenceMap.forEach { if (it.name ==)}
-    return psiReferenceMap;
+    return psiReferenceMap
+}
+
+private fun isValueContextInFile (reference: JSReferenceExpression, context: PsiElement): Boolean {
+    return reference.resolve()?.containingFile?.virtualFile?.path == context.containingFile.virtualFile.path
+}
+
+private fun getFunctionContext (psiReference: JSPsiReferenceElement, targetScope: PsiElement): JSFunctionExpression? {
+    var parent = psiReference.element.parent
+    val ret: JSFunctionExpression? = null
+    while (parent != null) {
+        if (parent is JSFunctionExpression) {
+            val block = parent.block
+
+            val varStatements =
+                block?.children?.filterIsInstance<JSVarStatement>()
+            if (varStatements != null) {
+                for (varStatement in varStatements) {
+                    print(varStatement)
+                    var foundRef: JSVariable? = null
+                    for(  it in varStatement.variables) {
+                        if (it.name == psiReference.referenceName) {
+                            foundRef = it
+                        }
+                    }
+                    if (foundRef != null) {
+                        return parent
+                    }
+                }
+            }
+            if (parent  == targetScope) {
+                return null
+            }
+        }
+        parent = parent.parent
+    }
+
+    return ret
+
 }

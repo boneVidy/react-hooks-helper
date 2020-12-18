@@ -1,12 +1,12 @@
-package icons.gen
+package gen
 
 import com.intellij.lang.javascript.psi.JSVarStatement
 import com.intellij.lang.javascript.psi.ecma6.impl.TypeScriptFunctionImpl
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.util.elementType
-import icons.consts.PsiElementTypeConst
-import icons.utils.getDependencies
+import consts.PsiElementTypeConst
+import utils.getDependencies
 
 fun genUseHooksCode(
     psiEle: PsiElement?,
