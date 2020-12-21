@@ -99,3 +99,14 @@ private fun getFunctionContext (psiReference: JSPsiReferenceElement, targetScope
     return ret
 
 }
+
+fun getVarStatementByDestructuringProperty (property: PsiElement): JSVarStatement? {
+    var ret:PsiElement? = property.context
+    do {
+        ret = ret?.context
+        if (ret is JSVarStatement) {
+            return ret
+        }
+    } while (ret != null)
+    return ret
+}

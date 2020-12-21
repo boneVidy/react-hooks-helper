@@ -1,30 +1,18 @@
 package gen
 
+import com.intellij.lang.javascript.psi.JSDestructuringArray
 import com.intellij.lang.javascript.psi.JSVarStatement
-import com.intellij.psi.PsiElement
-import com.intellij.psi.tree.IElementType
-import com.intellij.psi.util.elementType
-import consts.PsiElementTypeConst
 
-fun genUseStateCode (
-    psiEle: PsiElement?
-): String {
-    var code = ""
-    val psiType: IElementType? = psiEle.elementType
-    psiEle?.let {
-        when {
-            psiType.toString() == PsiElementTypeConst.JS_VAR_STATEMENT -> {
-                code = genUseStateByVarStatement(psiEle as JSVarStatement)
-            }
-            psiType.toString() == PsiElementTypeConst.TYPESCRIPT_VARIABLE -> {
-                code = genUseStateByVarStatement(psiEle.context as JSVarStatement)
-            }
-        }
-
+fun genUseStateByVarStatementWithDestruct(jsVarStatement: JSVarStatement): String {
+    val varKeyword = jsVarStatement.varKeyword?.text
+    val firstVariable = jsVarStatement.variables[0]
+    val varName = if (firstVariable.context is JSDestructuringArray) {
+        (firstVariable.context as JSDestructuringArray).text
+    }else {
+        jsVarStatement.variables[0].context?.context?.text!!
     }
-    return code
+    return "$varKeyword [$varName, setState] = useState(${jsVarStatement.declarations[0].initializer?.text})"
 }
-
 fun genUseStateByVarStatement(jsVarStatement: JSVarStatement): String {
     val varKeyword = jsVarStatement.varKeyword?.text
     var varName = ""
