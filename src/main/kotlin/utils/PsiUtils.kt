@@ -57,28 +57,37 @@ private fun isValueContextInFile (reference: JSReferenceExpression, context: Psi
     return reference.resolve()?.containingFile?.virtualFile?.path == context.containingFile.virtualFile.path
 }
 
+
 private fun getFunctionContext (psiReference: JSPsiReferenceElement, targetScope: PsiElement): JSFunctionExpression? {
     var parent = psiReference.element.parent
     val ret: JSFunctionExpression? = null
     while (parent != null) {
         if (parent is JSFunctionExpression) {
             val block = parent.block
-
             val varStatements =
                 block?.children?.filterIsInstance<JSVarStatement>()
+            var foundRef: PsiElement? = null
             if (varStatements != null) {
                 for (varStatement in varStatements) {
                     print(varStatement)
-                    var foundRef: JSVariable? = null
-                    for(  it in varStatement.variables) {
+
+                    for(it in varStatement.variables) {
                         if (it.name == psiReference.referenceName) {
                             foundRef = it
                         }
                     }
-                    if (foundRef != null) {
-                        return parent
+
+                }
+            }
+            if (parent.parameterList?.parameters != null && foundRef == null) {
+                for (parameter in parent.parameterList?.parameters!!) {
+                    if (parameter.name == psiReference.referenceName) {
+                        foundRef = parameter
                     }
                 }
+            }
+            if (foundRef != null) {
+                return parent
             }
             if (parent  == targetScope) {
                 return null

@@ -1,34 +1,35 @@
 package gen
 
+import com.intellij.lang.javascript.psi.JSFunction
 import com.intellij.lang.javascript.psi.JSVarStatement
-import com.intellij.lang.javascript.psi.ecma6.impl.TypeScriptFunctionImpl
+import com.intellij.lang.javascript.psi.JSVariable
 import com.intellij.psi.PsiElement
-import com.intellij.psi.tree.IElementType
-import com.intellij.psi.util.elementType
-import consts.PsiElementTypeConst
 import utils.getDependencies
 
 fun genUseHooksCode(
     psiEle: PsiElement?,
     hooksName: String = "useMemo"
-): String {
+): String? {
     var code = ""
-    val psiType: IElementType? = psiEle.elementType
     psiEle?.let {
-        when {
-            psiType.toString() == PsiElementTypeConst.JS_VAR_STATEMENT -> {
-                code = genHooksByVarStatement(psiEle as JSVarStatement, hooksName)
+        when (psiEle) {
+            is JSVarStatement -> {
+                code = genHooksByVarStatement(psiEle, hooksName)
             }
-            psiType.toString() == PsiElementTypeConst.TYPESCRIPT_VARIABLE -> {
+            is JSVariable -> {
                 code = genHooksByVarStatement(psiEle.context as JSVarStatement, hooksName)
             }
-            psiType.toString() == PsiElementTypeConst.TYPESCRIPT_FUNCTION -> {
-                code = genHooksByFunction(psiEle as TypeScriptFunctionImpl, hooksName)
+            is JSFunction -> {
+                code = genHooksByFunction(psiEle, hooksName)
             }
         }
 
     }
-    return code
+    if (code != "") {
+        return code
+
+    }
+    return psiEle?.text
 }
 
 fun genHooksByVarStatement(varStatement: JSVarStatement, hooksName: String = "useMemo"): String {
@@ -49,7 +50,7 @@ fun genHooksByVarStatement(varStatement: JSVarStatement, hooksName: String = "us
 
 }
 
-fun genHooksByFunction(function: TypeScriptFunctionImpl, hooksName: String = "useMemo"): String {
+fun genHooksByFunction(function: JSFunction, hooksName: String = "useMemo"): String {
     val depMap = getDependencies(function)
     val varKeyword = "const"
     val varName = function.name

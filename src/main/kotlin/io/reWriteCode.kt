@@ -7,15 +7,15 @@ import com.intellij.openapi.project.Project
 fun reWriteCode(
     project: Project?,
     document: Document?,
-    code: String,
+    code: String?,
     offsetStart: Int,
     offsetEnd: Int
 ) {
     WriteCommandAction.runWriteCommandAction(project) {
         document?.apply {
-
-            replaceString(offsetStart, offsetEnd, code)
-
+            code?.let {
+                replaceString(offsetStart, offsetEnd, code)
+            }
         }
     }
 }

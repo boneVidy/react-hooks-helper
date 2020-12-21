@@ -1,10 +1,9 @@
 package gen
 
 import com.intellij.psi.PsiElement
-import gen.genUseHooksCode
 
 fun genUseCallBackCode(
     psiEle: PsiElement?
-): String {
+): String? {
     return genUseHooksCode(psiEle, "useCallback")
 }
