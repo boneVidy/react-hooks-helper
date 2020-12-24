@@ -3,17 +3,26 @@ package utils
 import com.intellij.lang.javascript.psi.*
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
-import com.intellij.psi.tree.IElementType
+import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.elementType
 import consts.PsiElementTypeConst
 
+fun isHooksStatement (varStatement: PsiElement): Boolean {
+    val hooksNameList = listOf("useCallback", "useState", "useMemo")
+    val callExpression = PsiTreeUtil.findChildOfType(varStatement, JSCallExpression::class.java, true)
+    if (callExpression != null && callExpression.methodExpression != null) {
+        if(hooksNameList.contains(callExpression.methodExpression!!.text)) {
+            return true
+        }
+    }
+    return false
+}
 fun getOffsetRange(element: PsiElement): Pair<Int, Int> {
     val range = element.textRange
-    val psiType: IElementType? = element.elementType
     val startOffset: Int
     val endOffset: Int
-    when {
-        psiType.toString() == PsiElementTypeConst.JS_VAR_STATEMENT || psiType.toString() == PsiElementTypeConst.TYPESCRIPT_FUNCTION -> {
+    when (element) {
+        is JSVarStatement, is JSFunction -> {
             startOffset = range.startOffset
             endOffset = range.endOffset
         }
@@ -22,8 +31,9 @@ fun getOffsetRange(element: PsiElement): Pair<Int, Int> {
             endOffset = element.context?.textRange?.endOffset ?: 0
         }
     }
-    return Pair( startOffset, endOffset)
+    return Pair(startOffset, endOffset)
 }
+
 fun getDependencies(psiElement: PsiElement): MutableMap<String, MutableSet<PsiReference>> {
     return getDependencies(psiElement, null, null)
 }
@@ -53,34 +63,43 @@ private fun getDependencies(
     return psiReferenceMap
 }
 
-private fun isValueContextInFile (reference: JSReferenceExpression, context: PsiElement): Boolean {
+private fun isValueContextInFile(reference: JSReferenceExpression, context: PsiElement): Boolean {
     return reference.resolve()?.containingFile?.virtualFile?.path == context.containingFile.virtualFile.path
 }
 
 
-private fun getFunctionContext (psiReference: JSPsiReferenceElement, targetScope: PsiElement): JSFunctionExpression? {
+private fun getFunctionContext(psiReference: JSPsiReferenceElement, targetScope: PsiElement): JSFunction? {
     var parent = psiReference.element.parent
     val ret: JSFunctionExpression? = null
     while (parent != null) {
-        if (parent is JSFunctionExpression) {
+        if (parent is JSFunction) {
             val block = parent.block
             val varStatements =
                 block?.children?.filterIsInstance<JSVarStatement>()
             var foundRef: PsiElement? = null
             if (varStatements != null) {
                 for (varStatement in varStatements) {
-                    print(varStatement)
-
-                    for(it in varStatement.variables) {
+                    for (it in varStatement.variables) {
                         if (it.name == psiReference.referenceName) {
                             foundRef = it
                         }
                     }
-
                 }
             }
             if (parent.parameterList?.parameters != null && foundRef == null) {
                 for (parameter in parent.parameterList?.parameters!!) {
+                    if (parameter is JSDestructuringParameter) {
+                        val jsDestructingObject: JSDestructuringObject? = PsiTreeUtil
+                            .findChildOfType(parameter, JSDestructuringObject::class.java, true)
+
+                        jsDestructingObject?.let {
+                            for (destructuringParam in jsDestructingObject.children) {
+                                if (destructuringParam.text == psiReference.referenceName) {
+                                    foundRef = destructuringParam
+                                }
+                            }
+                        }
+                    }
                     if (parameter.name == psiReference.referenceName) {
                         foundRef = parameter
                     }
@@ -89,7 +108,7 @@ private fun getFunctionContext (psiReference: JSPsiReferenceElement, targetScope
             if (foundRef != null) {
                 return parent
             }
-            if (parent  == targetScope) {
+            if (parent == targetScope) {
                 return null
             }
         }
@@ -97,16 +116,7 @@ private fun getFunctionContext (psiReference: JSPsiReferenceElement, targetScope
     }
 
     return ret
-
 }
 
-fun getVarStatementByDestructuringProperty (property: PsiElement): JSVarStatement? {
-    var ret:PsiElement? = property.context
-    do {
-        ret = ret?.context
-        if (ret is JSVarStatement) {
-            return ret
-        }
-    } while (ret != null)
-    return ret
-}
+
+

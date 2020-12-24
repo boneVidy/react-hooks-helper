@@ -1,0 +1,3 @@
+const x = useCallback(() => {
+    console.log(fistName, lastName)
+}, [fistName, lastName]) 

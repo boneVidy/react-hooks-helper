@@ -1,6 +1,6 @@
 <idea-plugin>
     <id>com.vidy.reactHooksHelper</id>
-    <name>reactHooksHelper</name>
+    <name>ReactHooksHelper</name>
     <vendor email="vidy3587@gmail.com" url="https://github.com/boneVidy">boneVidy</vendor>
     <version>0.0.2</version>
     <description><![CDATA[
@@ -22,20 +22,18 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
+        <intentionAction>
+            <className>actions.ToUseMemoIntentionAction</className>
+            <category>React</category>
+        </intentionAction>
+        <intentionAction>
+            <className>actions.ToUseCallbackIntentionAction</className>
+            <category>React</category>
+        </intentionAction>
+        <intentionAction>
+            <className>actions.ToUseStateIntentionAction</className>
+            <category>React</category>
+        </intentionAction>
     </extensions>
     <idea-version since-build="162"/>
-    <actions>
-        <action icon="Icons.pluginIcon" id="toUseCallback" class="actions.ToUseCallback" text="Convert to UseCallback" description="Convert to UseCallback">
-            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
-            <add-to-group group-id="EditorActions" anchor="after"/>
-        </action>
-        <action icon="Icons.pluginIcon" id="toUseMemo" class="actions.ToUseMemo" text="Convert to UseMemo" description="Convert to UseMemo">
-            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
-            <add-to-group group-id="EditorActions" anchor="after"/>
-        </action>
-        <action icon="Icons.pluginIcon" id="toUseState" class="actions.ToUseState" text="Convert to UseState" description="Convert to UseState">
-            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
-            <add-to-group group-id="ProjectViewPopupMenu" anchor="after"/>
-        </action>
-    </actions>
 </idea-plugin>

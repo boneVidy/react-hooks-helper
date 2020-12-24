@@ -1,8 +1,6 @@
 package gen
 
-import com.intellij.lang.javascript.psi.JSFunction
-import com.intellij.lang.javascript.psi.JSVarStatement
-import com.intellij.lang.javascript.psi.JSVariable
+import com.intellij.lang.javascript.psi.*
 import com.intellij.psi.PsiElement
 import utils.getDependencies
 
@@ -15,9 +13,6 @@ fun genUseHooksCode(
         when (psiEle) {
             is JSVarStatement -> {
                 code = genHooksByVarStatement(psiEle, hooksName)
-            }
-            is JSVariable -> {
-                code = genHooksByVarStatement(psiEle.context as JSVarStatement, hooksName)
             }
             is JSFunction -> {
                 code = genHooksByFunction(psiEle, hooksName)
@@ -35,18 +30,16 @@ fun genUseHooksCode(
 fun genHooksByVarStatement(varStatement: JSVarStatement, hooksName: String = "useMemo"): String {
     val depMap = getDependencies(varStatement)
     val varKeyword = varStatement.varKeyword?.text
-    var varName = ""
-    if (varStatement.variables.size == 1) {
-        varName = varStatement.variables[0].name.toString()
-    }
+    val varName = varStatement.children[1].node.firstChildNode.text
+    val decalations = varStatement.children[1].node.lastChildNode.text
     var deps = ""
     if (depMap.isNotEmpty()) {
         deps = depMap.keys.reduce { acc: String, s: String -> """$acc,$s""" }
     }
     if (hooksName == "useCallback") {
-        return """$varKeyword $varName = $hooksName(${varStatement.declarations[0].children[0].text}, [$deps])"""
+        return """$varKeyword $varName = $hooksName(${decalations}, [$deps])"""
     }
-    return """$varKeyword $varName = $hooksName(() => ${varStatement.declarations[0].children[0].text}, [$deps])"""
+    return """$varKeyword $varName = $hooksName(() => (${decalations}), [$deps])"""
 
 }
 
