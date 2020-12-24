@@ -9,6 +9,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import gen.genUseStateCode
+import utils.canUseHooks
 import utils.isHooksStatement
 
 
@@ -20,6 +21,10 @@ class ToUseStateIntentionAction: PsiElementBaseIntentionAction(), IntentionActio
         return "convert to useState"
     }
     override fun isAvailable(project: Project, editor: Editor?, element: PsiElement): Boolean {
+        val isCanUseHooks =  canUseHooks(element)
+        if (!isCanUseHooks) {
+            return false
+        }
         val parent = PsiTreeUtil.findFirstContext(element, true) {
             it is JSVarStatement
         }

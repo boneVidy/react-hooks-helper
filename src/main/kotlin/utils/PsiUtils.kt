@@ -1,12 +1,18 @@
 package utils
 
+import com.intellij.lang.ecmascript6.psi.JSClassExpression
 import com.intellij.lang.javascript.psi.*
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.elementType
 import consts.PsiElementTypeConst
-
+fun isParentIsJsClass (varStatement: PsiElement): Boolean {
+    val classExpression = PsiTreeUtil.findFirstContext(varStatement, true) {
+        it is JSClassExpression
+    }
+    return classExpression != null
+}
 fun isHooksStatement (varStatement: PsiElement): Boolean {
     val hooksNameList = listOf("useCallback", "useState", "useMemo")
     val callExpression = PsiTreeUtil.findChildOfType(varStatement, JSCallExpression::class.java, true)
@@ -119,4 +125,15 @@ private fun getFunctionContext(psiReference: JSPsiReferenceElement, targetScope:
 }
 
 
-
+fun canUseHooks(element: PsiElement): Boolean {
+    if (isParentIsJsClass(element)) {
+        return false
+    }
+    val parent = PsiTreeUtil.findFirstContext(element, true) {
+        it is JSVarStatement || it is JSFunction
+    }
+    if (parent != null && isHooksStatement(parent)) {
+        return false
+    }
+    return true
+}

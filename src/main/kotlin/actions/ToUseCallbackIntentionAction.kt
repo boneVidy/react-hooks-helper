@@ -9,7 +9,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import gen.genUseMemoOrUseCallbackCode
-import utils.isHooksStatement
+import utils.canUseHooks
 
 
 class ToUseCallbackIntentionAction: PsiElementBaseIntentionAction(), IntentionAction {
@@ -21,12 +21,12 @@ class ToUseCallbackIntentionAction: PsiElementBaseIntentionAction(), IntentionAc
         return "convert to useCallback"
     }
     override fun isAvailable(project: Project, editor: Editor?, element: PsiElement): Boolean {
-
+        val isCanUseHooks =  canUseHooks(element)
+        if (!isCanUseHooks) {
+            return false
+        }
         val parent = PsiTreeUtil.findFirstContext(element, true) {
             it is JSVarStatement || it is JSFunction
-        }
-        if (parent != null && isHooksStatement(parent)) {
-            return false
         }
         val childFunction = PsiTreeUtil.findChildOfType(parent, JSFunction::class.java, true)
         if (parent is JSVarStatement && childFunction == null) {
@@ -34,6 +34,8 @@ class ToUseCallbackIntentionAction: PsiElementBaseIntentionAction(), IntentionAc
         }
         return parent != null
     }
+
+
 
     override fun invoke(project: Project, editor: Editor?, element: PsiElement) {
         genUseMemoOrUseCallbackCode(editor, project, element, "useCallback")
